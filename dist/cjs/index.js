@@ -13,7 +13,7 @@ var crypto = require('crypto');
 var secp256k1 = require('secp256k1');
 var queryString = require('query-string');
 require('isomorphic-ws');
-var wrtc = require('wrtc');
+var wrtc = require('@koush/wrtc');
 var io = require('socket.io-client');
 var QrCode = require('qrcode');
 var web3 = require('web3');
@@ -49,20 +49,385 @@ var axios__default = /*#__PURE__*/_interopDefaultLegacy(axios);
 var Common__default = /*#__PURE__*/_interopDefaultLegacy(Common);
 var SimplePeer__default = /*#__PURE__*/_interopDefaultLegacy(SimplePeer);
 
-function _typeof(obj) {
-  "@babel/helpers - typeof";
+function ownKeys(object, enumerableOnly) {
+  var keys = Object.keys(object);
 
-  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-    _typeof = function (obj) {
-      return typeof obj;
-    };
-  } else {
-    _typeof = function (obj) {
-      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  if (Object.getOwnPropertySymbols) {
+    var symbols = Object.getOwnPropertySymbols(object);
+    enumerableOnly && (symbols = symbols.filter(function (sym) {
+      return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+    })), keys.push.apply(keys, symbols);
+  }
+
+  return keys;
+}
+
+function _objectSpread2(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = null != arguments[i] ? arguments[i] : {};
+    i % 2 ? ownKeys(Object(source), !0).forEach(function (key) {
+      _defineProperty(target, key, source[key]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) {
+      Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+    });
+  }
+
+  return target;
+}
+
+function _regeneratorRuntime() {
+  /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
+
+  _regeneratorRuntime = function () {
+    return exports;
+  };
+
+  var exports = {},
+      Op = Object.prototype,
+      hasOwn = Op.hasOwnProperty,
+      $Symbol = "function" == typeof Symbol ? Symbol : {},
+      iteratorSymbol = $Symbol.iterator || "@@iterator",
+      asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator",
+      toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+
+  function define(obj, key, value) {
+    return Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: !0,
+      configurable: !0,
+      writable: !0
+    }), obj[key];
+  }
+
+  try {
+    define({}, "");
+  } catch (err) {
+    define = function (obj, key, value) {
+      return obj[key] = value;
     };
   }
 
-  return _typeof(obj);
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator,
+        generator = Object.create(protoGenerator.prototype),
+        context = new Context(tryLocsList || []);
+    return generator._invoke = function (innerFn, self, context) {
+      var state = "suspendedStart";
+      return function (method, arg) {
+        if ("executing" === state) throw new Error("Generator is already running");
+
+        if ("completed" === state) {
+          if ("throw" === method) throw arg;
+          return doneResult();
+        }
+
+        for (context.method = method, context.arg = arg;;) {
+          var delegate = context.delegate;
+
+          if (delegate) {
+            var delegateResult = maybeInvokeDelegate(delegate, context);
+
+            if (delegateResult) {
+              if (delegateResult === ContinueSentinel) continue;
+              return delegateResult;
+            }
+          }
+
+          if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) {
+            if ("suspendedStart" === state) throw state = "completed", context.arg;
+            context.dispatchException(context.arg);
+          } else "return" === context.method && context.abrupt("return", context.arg);
+          state = "executing";
+          var record = tryCatch(innerFn, self, context);
+
+          if ("normal" === record.type) {
+            if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue;
+            return {
+              value: record.arg,
+              done: context.done
+            };
+          }
+
+          "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg);
+        }
+      };
+    }(innerFn, self, context), generator;
+  }
+
+  function tryCatch(fn, obj, arg) {
+    try {
+      return {
+        type: "normal",
+        arg: fn.call(obj, arg)
+      };
+    } catch (err) {
+      return {
+        type: "throw",
+        arg: err
+      };
+    }
+  }
+
+  exports.wrap = wrap;
+  var ContinueSentinel = {};
+
+  function Generator() {}
+
+  function GeneratorFunction() {}
+
+  function GeneratorFunctionPrototype() {}
+
+  var IteratorPrototype = {};
+  define(IteratorPrototype, iteratorSymbol, function () {
+    return this;
+  });
+  var getProto = Object.getPrototypeOf,
+      NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+  NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype);
+  var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype);
+
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function (method) {
+      define(prototype, method, function (arg) {
+        return this._invoke(method, arg);
+      });
+    });
+  }
+
+  function AsyncIterator(generator, PromiseImpl) {
+    function invoke(method, arg, resolve, reject) {
+      var record = tryCatch(generator[method], generator, arg);
+
+      if ("throw" !== record.type) {
+        var result = record.arg,
+            value = result.value;
+        return value && "object" == typeof value && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) {
+          invoke("next", value, resolve, reject);
+        }, function (err) {
+          invoke("throw", err, resolve, reject);
+        }) : PromiseImpl.resolve(value).then(function (unwrapped) {
+          result.value = unwrapped, resolve(result);
+        }, function (error) {
+          return invoke("throw", error, resolve, reject);
+        });
+      }
+
+      reject(record.arg);
+    }
+
+    var previousPromise;
+
+    this._invoke = function (method, arg) {
+      function callInvokeWithMethodAndArg() {
+        return new PromiseImpl(function (resolve, reject) {
+          invoke(method, arg, resolve, reject);
+        });
+      }
+
+      return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg();
+    };
+  }
+
+  function maybeInvokeDelegate(delegate, context) {
+    var method = delegate.iterator[context.method];
+
+    if (undefined === method) {
+      if (context.delegate = null, "throw" === context.method) {
+        if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel;
+        context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method");
+      }
+
+      return ContinueSentinel;
+    }
+
+    var record = tryCatch(method, delegate.iterator, context.arg);
+    if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel;
+    var info = record.arg;
+    return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel);
+  }
+
+  function pushTryEntry(locs) {
+    var entry = {
+      tryLoc: locs[0]
+    };
+    1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry);
+  }
+
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal", delete record.arg, entry.completion = record;
+  }
+
+  function Context(tryLocsList) {
+    this.tryEntries = [{
+      tryLoc: "root"
+    }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0);
+  }
+
+  function values(iterable) {
+    if (iterable) {
+      var iteratorMethod = iterable[iteratorSymbol];
+      if (iteratorMethod) return iteratorMethod.call(iterable);
+      if ("function" == typeof iterable.next) return iterable;
+
+      if (!isNaN(iterable.length)) {
+        var i = -1,
+            next = function next() {
+          for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next;
+
+          return next.value = undefined, next.done = !0, next;
+        };
+
+        return next.next = next;
+      }
+    }
+
+    return {
+      next: doneResult
+    };
+  }
+
+  function doneResult() {
+    return {
+      value: undefined,
+      done: !0
+    };
+  }
+
+  return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) {
+    var ctor = "function" == typeof genFun && genFun.constructor;
+    return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name));
+  }, exports.mark = function (genFun) {
+    return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun;
+  }, exports.awrap = function (arg) {
+    return {
+      __await: arg
+    };
+  }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () {
+    return this;
+  }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) {
+    void 0 === PromiseImpl && (PromiseImpl = Promise);
+    var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl);
+    return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) {
+      return result.done ? result.value : iter.next();
+    });
+  }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () {
+    return this;
+  }), define(Gp, "toString", function () {
+    return "[object Generator]";
+  }), exports.keys = function (object) {
+    var keys = [];
+
+    for (var key in object) keys.push(key);
+
+    return keys.reverse(), function next() {
+      for (; keys.length;) {
+        var key = keys.pop();
+        if (key in object) return next.value = key, next.done = !1, next;
+      }
+
+      return next.done = !0, next;
+    };
+  }, exports.values = values, Context.prototype = {
+    constructor: Context,
+    reset: function (skipTempReset) {
+      if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined);
+    },
+    stop: function () {
+      this.done = !0;
+      var rootRecord = this.tryEntries[0].completion;
+      if ("throw" === rootRecord.type) throw rootRecord.arg;
+      return this.rval;
+    },
+    dispatchException: function (exception) {
+      if (this.done) throw exception;
+      var context = this;
+
+      function handle(loc, caught) {
+        return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught;
+      }
+
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i],
+            record = entry.completion;
+        if ("root" === entry.tryLoc) return handle("end");
+
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc"),
+              hasFinally = hasOwn.call(entry, "finallyLoc");
+
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
+            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0);
+          } else {
+            if (!hasFinally) throw new Error("try statement without catch or finally");
+            if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc);
+          }
+        }
+      }
+    },
+    abrupt: function (type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+
+        if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+
+      finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null);
+      var record = finallyEntry ? finallyEntry.completion : {};
+      return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record);
+    },
+    complete: function (record, afterLoc) {
+      if ("throw" === record.type) throw record.arg;
+      return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel;
+    },
+    finish: function (finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel;
+      }
+    },
+    catch: function (tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+
+          if ("throw" === record.type) {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+
+          return thrown;
+        }
+      }
+
+      throw new Error("illegal catch attempt");
+    },
+    delegateYield: function (iterable, resultName, nextLoc) {
+      return this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      }, "next" === this.method && (this.arg = undefined), ContinueSentinel;
+    }
+  }, exports;
+}
+
+function _typeof(obj) {
+  "@babel/helpers - typeof";
+
+  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  }, _typeof(obj);
 }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
@@ -120,6 +485,9 @@ function _defineProperties(target, props) {
 function _createClass(Constructor, protoProps, staticProps) {
   if (protoProps) _defineProperties(Constructor.prototype, protoProps);
   if (staticProps) _defineProperties(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {
+    writable: false
+  });
   return Constructor;
 }
 
@@ -138,40 +506,6 @@ function _defineProperty(obj, key, value) {
   return obj;
 }
 
-function ownKeys(object, enumerableOnly) {
-  var keys = Object.keys(object);
-
-  if (Object.getOwnPropertySymbols) {
-    var symbols = Object.getOwnPropertySymbols(object);
-    if (enumerableOnly) symbols = symbols.filter(function (sym) {
-      return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-    });
-    keys.push.apply(keys, symbols);
-  }
-
-  return keys;
-}
-
-function _objectSpread2(target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = arguments[i] != null ? arguments[i] : {};
-
-    if (i % 2) {
-      ownKeys(Object(source), true).forEach(function (key) {
-        _defineProperty(target, key, source[key]);
-      });
-    } else if (Object.getOwnPropertyDescriptors) {
-      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-    } else {
-      ownKeys(Object(source)).forEach(function (key) {
-        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-      });
-    }
-  }
-
-  return target;
-}
-
 function _inherits(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
@@ -184,22 +518,24 @@ function _inherits(subClass, superClass) {
       configurable: true
     }
   });
+  Object.defineProperty(subClass, "prototype", {
+    writable: false
+  });
   if (superClass) _setPrototypeOf(subClass, superClass);
 }
 
 function _getPrototypeOf(o) {
-  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
     return o.__proto__ || Object.getPrototypeOf(o);
   };
   return _getPrototypeOf(o);
 }
 
 function _setPrototypeOf(o, p) {
-  _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+  _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
     o.__proto__ = p;
     return o;
   };
-
   return _setPrototypeOf(o, p);
 }
 
@@ -209,7 +545,7 @@ function _isNativeReflectConstruct() {
   if (typeof Proxy === "function") return true;
 
   try {
-    Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
+    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
     return true;
   } catch (e) {
     return false;
@@ -227,6 +563,8 @@ function _assertThisInitialized(self) {
 function _possibleConstructorReturn(self, call) {
   if (call && (typeof call === "object" || typeof call === "function")) {
     return call;
+  } else if (call !== void 0) {
+    throw new TypeError("Derived constructors may only return object or undefined");
   }
 
   return _assertThisInitialized(self);
@@ -260,9 +598,9 @@ function _superPropBase(object, property) {
   return object;
 }
 
-function _get(target, property, receiver) {
+function _get() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get = Reflect.get;
+    _get = Reflect.get.bind();
   } else {
     _get = function _get(target, property, receiver) {
       var base = _superPropBase(target, property);
@@ -271,14 +609,14 @@ function _get(target, property, receiver) {
       var desc = Object.getOwnPropertyDescriptor(base, property);
 
       if (desc.get) {
-        return desc.get.call(receiver);
+        return desc.get.call(arguments.length < 3 ? target : receiver);
       }
 
       return desc.value;
     };
   }
 
-  return _get(target, property, receiver || target);
+  return _get.apply(this, arguments);
 }
 
 function _toConsumableArray(arr) {
@@ -290,7 +628,7 @@ function _arrayWithoutHoles(arr) {
 }
 
 function _iterableToArray(iter) {
-  if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
+  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
 }
 
 function _unsupportedIterableToArray(o, minLen) {
@@ -620,7 +958,7 @@ var MewConnectCommon = /*#__PURE__*/function (_EventEmitter) {
   }]);
 
   return MewConnectCommon;
-}(EventEmitter__default['default']);
+}(EventEmitter__default["default"]);
 
 var MewConnectCrypto = /*#__PURE__*/function () {
   function MewConnectCrypto() {
@@ -640,7 +978,7 @@ var MewConnectCrypto = /*#__PURE__*/function () {
   }, {
     key: "generateMessage",
     value: function generateMessage() {
-      return crypto__default['default'].randomBytes(32).toString('hex');
+      return crypto__default["default"].randomBytes(32).toString('hex');
     } // Not for the Address, but generate them for the connection check
 
   }, {
@@ -669,8 +1007,8 @@ var MewConnectCrypto = /*#__PURE__*/function () {
       var privKey;
 
       do {
-        privKey = crypto__default['default'].randomBytes(32);
-      } while (!secp256k1__default['default'].privateKeyVerify(privKey));
+        privKey = crypto__default["default"].randomBytes(32);
+      } while (!secp256k1__default["default"].privateKeyVerify(privKey));
 
       return privKey;
     }
@@ -679,14 +1017,14 @@ var MewConnectCrypto = /*#__PURE__*/function () {
     value: function generatePublic(privKey) {
       var pvt = Buffer.from(privKey, 'hex');
       this.prvt = pvt;
-      return secp256k1__default['default'].publicKeyCreate(pvt);
+      return secp256k1__default["default"].publicKeyCreate(pvt);
     }
   }, {
     key: "encrypt",
     value: function encrypt(dataToSend) {
-      var publicKeyA = eccrypto__default['default'].getPublic(this.prvt);
+      var publicKeyA = eccrypto__default["default"].getPublic(this.prvt);
       return new Promise(function (resolve, reject) {
-        eccrypto__default['default'].encrypt(publicKeyA, Buffer.from(dataToSend)).then(function (_initial) {
+        eccrypto__default["default"].encrypt(publicKeyA, Buffer.from(dataToSend)).then(function (_initial) {
           resolve(_initial);
         })["catch"](function (error) {
           reject(error);
@@ -699,7 +1037,7 @@ var MewConnectCrypto = /*#__PURE__*/function () {
       var _this = this;
 
       return new Promise(function (resolve, reject) {
-        eccrypto__default['default'].decrypt(_this.prvt, {
+        eccrypto__default["default"].decrypt(_this.prvt, {
           ciphertext: Buffer.from(dataToSee.ciphertext),
           ephemPublicKey: Buffer.from(dataToSee.ephemPublicKey),
           iv: Buffer.from(dataToSee.iv),
@@ -736,8 +1074,8 @@ var MewConnectCrypto = /*#__PURE__*/function () {
 
       return new Promise(function (resolve, reject) {
         try {
-          var msg = ethUtils__default['default'].hashPersonalMessage(ethUtils__default['default'].toBuffer(msgToSign));
-          var signed = ethUtils__default['default'].ecsign(Buffer.from(msg), Buffer.from(_this2.prvt, 'hex'));
+          var msg = ethUtils__default["default"].hashPersonalMessage(ethUtils__default["default"].toBuffer(msgToSign));
+          var signed = ethUtils__default["default"].ecsign(Buffer.from(msg), Buffer.from(_this2.prvt, 'hex'));
           var combined = Buffer.concat([Buffer.from([signed.v]), Buffer.from(signed.r), Buffer.from(signed.s)]);
           var combinedHex = combined.toString('hex');
           resolve(combinedHex);
@@ -750,8 +1088,8 @@ var MewConnectCrypto = /*#__PURE__*/function () {
     key: "signMessageSync",
     value: function signMessageSync(msgToSign) {
       msgToSign = this.bufferToString(msgToSign);
-      var msg = ethUtils__default['default'].hashPersonalMessage(ethUtils__default['default'].toBuffer(msgToSign));
-      var signed = ethUtils__default['default'].ecsign(Buffer.from(msg), Buffer.from(this.prvt, 'hex'));
+      var msg = ethUtils__default["default"].hashPersonalMessage(ethUtils__default["default"].toBuffer(msgToSign));
+      var signed = ethUtils__default["default"].ecsign(Buffer.from(msg), Buffer.from(this.prvt, 'hex'));
       var combined = Buffer.concat([Buffer.from([signed.v]), Buffer.from(signed.r), Buffer.from(signed.s)]);
       return combined.toString('hex');
     }
@@ -807,8 +1145,8 @@ var MewConnectCrypto = /*#__PURE__*/function () {
   return MewConnectCrypto;
 }();
 
-var debugPeer$2 = debugLogger__default['default']('MEWconnectVerbose:websocketWrapper');
-var debug$d = debugLogger__default['default']('MEWconnect:websocketWrapper');
+var debugPeer$2 = debugLogger__default["default"]('MEWconnectVerbose:websocketWrapper');
+var debug$d = debugLogger__default["default"]('MEWconnect:websocketWrapper');
 
 var WebsocketConnection = /*#__PURE__*/function () {
   function WebsocketConnection() {
@@ -855,19 +1193,19 @@ var WebsocketConnection = /*#__PURE__*/function () {
   _createClass(WebsocketConnection, [{
     key: "connect",
     value: function () {
-      var _connect = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(websocketUrl) {
+      var _connect = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(websocketUrl) {
         var options,
             url,
             _WebSocket,
             _args = arguments;
 
-        return regeneratorRuntime.wrap(function _callee$(_context) {
+        return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 options = _args.length > 1 && _args[1] !== undefined ? _args[1] : {};
                 _context.prev = 1;
-                url = "".concat(websocketUrl, "?").concat(queryString__default['default'].stringify(options));
+                url = "".concat(websocketUrl, "?").concat(queryString__default["default"].stringify(options));
                 debug$d(url);
 
                 if (!(typeof jest !== 'undefined' && typeof window === 'undefined')) {
@@ -921,8 +1259,8 @@ var WebsocketConnection = /*#__PURE__*/function () {
   }, {
     key: "disconnect",
     value: function () {
-      var _disconnect = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      var _disconnect = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
@@ -1081,9 +1419,9 @@ var WebsocketConnection = /*#__PURE__*/function () {
   return WebsocketConnection;
 }();
 
-var debug$c = debugLogger__default['default']('MEWconnect:initiator-V2');
-var debugTurn = debugLogger__default['default']('MEWconnect:turn-V2');
-var debugStages$3 = debugLogger__default['default']('MEWconnect:initiator-stages-V2');
+var debug$c = debugLogger__default["default"]('MEWconnect:initiator-V2');
+var debugTurn = debugLogger__default["default"]('MEWconnect:turn-V2');
+var debugStages$3 = debugLogger__default["default"]('MEWconnect:initiator-stages-V2');
 
 var MewConnectInitiatorV2 = /*#__PURE__*/function (_MewConnectCommon) {
   _inherits(MewConnectInitiatorV2, _MewConnectCommon);
@@ -1129,7 +1467,7 @@ var MewConnectInitiatorV2 = /*#__PURE__*/function (_MewConnectCommon) {
       _this.lifeCycle = _this.jsonDetails.lifeCycle;
       _this.stunServers = options.stunServers || _this.jsonDetails.stunSrvers;
       _this.iceStates = _this.jsonDetails.iceConnectionState;
-      _this.initiatorId = uuid__default['default']();
+      _this.initiatorId = uuid__default["default"]();
       _this.isActiveInstance = true;
       _this.timer = null;
       _this.retryCount = 0; // WebRTC options
@@ -1174,8 +1512,8 @@ var MewConnectInitiatorV2 = /*#__PURE__*/function (_MewConnectCommon) {
     }
   }, {
     key: "getSocketConnectionState",
-    // Returns a boolean indicating whether the socket connection exists and is active
-    value: function getSocketConnectionState() {
+    value: // Returns a boolean indicating whether the socket connection exists and is active
+    function getSocketConnectionState() {
       return this.socketV1Connected || this.socketConnected;
     } // Returns a boolean indicating whether the WebRTC connection exists and is active
 
@@ -1221,12 +1559,12 @@ var MewConnectInitiatorV2 = /*#__PURE__*/function (_MewConnectCommon) {
   }, {
     key: "initiatorStart",
     value: function () {
-      var _initiatorStart = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+      var _initiatorStart = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
         var url,
             cryptoInstance,
             details,
             _args = arguments;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
+        return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
@@ -1269,11 +1607,11 @@ var MewConnectInitiatorV2 = /*#__PURE__*/function (_MewConnectCommon) {
   }, {
     key: "connect",
     value: function () {
-      var _connect = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(websocketURL) {
+      var _connect = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(websocketURL) {
         var options,
             queryOptions,
             _args2 = arguments;
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
@@ -1317,8 +1655,8 @@ var MewConnectInitiatorV2 = /*#__PURE__*/function (_MewConnectCommon) {
   }, {
     key: "regenerateCode",
     value: function () {
-      var _regenerateCode = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      var _regenerateCode = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
@@ -1350,8 +1688,8 @@ var MewConnectInitiatorV2 = /*#__PURE__*/function (_MewConnectCommon) {
   }, {
     key: "useFallback",
     value: function () {
-      var _useFallback = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
-        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+      var _useFallback = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
@@ -1542,7 +1880,7 @@ var MewConnectInitiatorV2 = /*#__PURE__*/function (_MewConnectCommon) {
             config: {
               iceServers: this.stunServers
             },
-            wrtc: wrtc__default['default']
+            wrtc: wrtc__default["default"]
           }
         };
         this.initiatorStartRTC(options);
@@ -1553,11 +1891,11 @@ var MewConnectInitiatorV2 = /*#__PURE__*/function (_MewConnectCommon) {
   }, {
     key: "sendOffer",
     value: function () {
-      var _sendOffer = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(data) {
+      var _sendOffer = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(data) {
         var _this3 = this;
 
         var encryptedSend;
-        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
@@ -1623,9 +1961,9 @@ var MewConnectInitiatorV2 = /*#__PURE__*/function (_MewConnectCommon) {
   }, {
     key: "recieveAnswer",
     value: function () {
-      var _recieveAnswer = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(data) {
+      var _recieveAnswer = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(data) {
         var plainTextOffer;
-        return regeneratorRuntime.wrap(function _callee6$(_context6) {
+        return _regeneratorRuntime().wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
@@ -1700,7 +2038,7 @@ var MewConnectInitiatorV2 = /*#__PURE__*/function (_MewConnectCommon) {
           config: {
             iceServers: webRtcServers
           },
-          wrtc: wrtc__default['default']
+          wrtc: wrtc__default["default"]
         };
 
         var simpleOptions = _objectSpread2(_objectSpread2({}, defaultOptions), webRtcConfig);
@@ -1737,9 +2075,9 @@ var MewConnectInitiatorV2 = /*#__PURE__*/function (_MewConnectCommon) {
   }, {
     key: "decryptIncomming",
     value: function () {
-      var _decryptIncomming = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7(data) {
+      var _decryptIncomming = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7(data) {
         var parsedJson;
-        return regeneratorRuntime.wrap(function _callee7$(_context7) {
+        return _regeneratorRuntime().wrap(function _callee7$(_context7) {
           while (1) {
             switch (_context7.prev = _context7.next) {
               case 0:
@@ -1796,8 +2134,8 @@ var MewConnectInitiatorV2 = /*#__PURE__*/function (_MewConnectCommon) {
   }, {
     key: "onData",
     value: function () {
-      var _onData = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8(peerID, data) {
-        return regeneratorRuntime.wrap(function _callee8$(_context8) {
+      var _onData = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee8(peerID, data) {
+        return _regeneratorRuntime().wrap(function _callee8$(_context8) {
           while (1) {
             switch (_context8.prev = _context8.next) {
               case 0:
@@ -1939,7 +2277,7 @@ var MewConnectInitiatorV2 = /*#__PURE__*/function (_MewConnectCommon) {
                 return newObject;
               })
             },
-            wrtc: wrtc__default['default']
+            wrtc: wrtc__default["default"]
           }
         };
         debug$c('turn info arrived and begin turn'); // todo remove dev item
@@ -1964,9 +2302,9 @@ var MewConnectInitiatorV2 = /*#__PURE__*/function (_MewConnectCommon) {
   return MewConnectInitiatorV2;
 }(MewConnectCommon);
 
-var debug$b = debugLogger__default['default']('MEWconnect:initiator-V1');
-var debugPeer$1 = debugLogger__default['default']('MEWconnectVerbose:peer-instances-V1');
-var debugStages$2 = debugLogger__default['default']('MEWconnect:initiator-stages-V1');
+var debug$b = debugLogger__default["default"]('MEWconnect:initiator-V1');
+var debugPeer$1 = debugLogger__default["default"]('MEWconnectVerbose:peer-instances-V1');
+var debugStages$2 = debugLogger__default["default"]('MEWconnect:initiator-stages-V1');
 
 var MewConnectInitiatorV1 = /*#__PURE__*/function (_MewConnectCommon) {
   _inherits(MewConnectInitiatorV1, _MewConnectCommon);
@@ -2001,7 +2339,7 @@ var MewConnectInitiatorV1 = /*#__PURE__*/function (_MewConnectCommon) {
       _this.iceState = '';
       _this.turnServers = [];
       _this.webRtcCommunication = options.webRtcCommunication;
-      _this.io = io__default['default'];
+      _this.io = io__default["default"];
       _this.signals = _this.jsonDetails.signals;
       _this.rtcEvents = _this.jsonDetails.rtc;
       _this.version = _this.jsonDetails.version;
@@ -2027,14 +2365,14 @@ var MewConnectInitiatorV1 = /*#__PURE__*/function (_MewConnectCommon) {
   }, {
     key: "initiatorStart",
     value: function () {
-      var _initiatorStart = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+      var _initiatorStart = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
         var url,
             cryptoInstance,
             details,
             toSign,
             options,
             _args = arguments;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
+        return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
@@ -2181,9 +2519,9 @@ var MewConnectInitiatorV1 = /*#__PURE__*/function (_MewConnectCommon) {
   }, {
     key: "beginRtcSequence",
     value: function () {
-      var _beginRtcSequence = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(data) {
+      var _beginRtcSequence = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(data) {
         var options;
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
@@ -2231,7 +2569,7 @@ var MewConnectInitiatorV1 = /*#__PURE__*/function (_MewConnectCommon) {
         config: {
           iceServers: webRtcServers
         },
-        wrtc: wrtc__default['default']
+        wrtc: wrtc__default["default"]
       };
 
       var simpleOptions = _objectSpread2(_objectSpread2({}, defaultOptions), {}, {
@@ -2263,9 +2601,9 @@ var MewConnectInitiatorV1 = /*#__PURE__*/function (_MewConnectCommon) {
   }, {
     key: "onSignal",
     value: function () {
-      var _onSignal = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(data) {
+      var _onSignal = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(data) {
         var encryptedSend;
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
@@ -2301,9 +2639,9 @@ var MewConnectInitiatorV1 = /*#__PURE__*/function (_MewConnectCommon) {
   }, {
     key: "recieveAnswer",
     value: function () {
-      var _recieveAnswer = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(data) {
+      var _recieveAnswer = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(data) {
         var plainTextOffer;
-        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
@@ -2380,8 +2718,8 @@ var MewConnectInitiatorV1 = /*#__PURE__*/function (_MewConnectCommon) {
   }, {
     key: "useFallback",
     value: function () {
-      var _useFallback = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
-        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+      var _useFallback = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
+        return _regeneratorRuntime().wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
@@ -2514,6 +2852,11 @@ var PopUpCreator = /*#__PURE__*/function (_EventEmitter) {
     key: "openPopupWindow",
     value: function openPopupWindow(text) {
       this.showPopupWindow(text);
+    }
+  }, {
+    key: "window",
+    get: function get() {
+      return this.popupWindow;
     }
   }, {
     key: "setWindowClosedListener",
@@ -2688,7 +3031,7 @@ var PopUpCreator = /*#__PURE__*/function (_EventEmitter) {
         this.createQrCodeModal();
         this.createWindowInformer();
         var element = document.getElementById('canvas-for-mewconnect-qr-code');
-        QrCode__default['default'].toCanvas(element, qrcode, {
+        QrCode__default["default"].toCanvas(element, qrcode, {
           errorCorrectionLevel: 'H',
           width: 200
         });
@@ -2737,7 +3080,7 @@ var PopUpCreator = /*#__PURE__*/function (_EventEmitter) {
     key: "updateQrCode",
     value: function updateQrCode(qrcode) {
       var element = document.getElementById('canvas-for-mewconnect-qr-code');
-      QrCode__default['default'].toCanvas(element, qrcode, {
+      QrCode__default["default"].toCanvas(element, qrcode, {
         errorCorrectionLevel: 'H',
         width: 200
       });
@@ -2764,15 +3107,10 @@ var PopUpCreator = /*#__PURE__*/function (_EventEmitter) {
       this.hideNotifier();
       this.closePopupWindow();
     }
-  }, {
-    key: "window",
-    get: function get() {
-      return this.popupWindow;
-    }
   }]);
 
   return PopUpCreator;
-}(EventEmitter__default['default']);
+}(EventEmitter__default["default"]);
 
 var getBufferFromHex = function getBufferFromHex(hex) {
   hex = sanitizeHex$1(hex);
@@ -2829,11 +3167,11 @@ var isAddress = function isAddress(address) {
     return true;
   }
 
-  return web3__default['default'].utils.checkAddressChecksum(address);
+  return web3__default["default"].utils.checkAddressChecksum(address);
 };
 
 var toChecksumAddress = function toChecksumAddress(address) {
-  return web3__default['default'].utils.toChecksumAddress(address);
+  return web3__default["default"].utils.toChecksumAddress(address);
 };
 
 var toBuffer$1 = function toBuffer(v) {
@@ -2967,11 +3305,11 @@ var errorHandler = (function (popUpHandler) {
 });
 
 var commonGenerator = function commonGenerator(network) {
-  var customCommon = Common__default['default'].forCustomChain('mainnet', {
+  var customCommon = Common__default["default"].forCustomChain('mainnet', {
     name: network.name_long,
     chainId: network.chainID
   });
-  return new Common__default['default'](customCommon._chainParams, 'petersburg', ['petersburg']);
+  return new Common__default["default"](customCommon._chainParams, 'petersburg', ['petersburg']);
 };
 
 var uint = 'uint';
@@ -3007,7 +3345,7 @@ var isJson = function isJson(str) {
 };
 
 var getService = function getService(parsableUrl) {
-  var parsedUrl = url__default['default'].parse(parsableUrl).hostname;
+  var parsedUrl = url__default["default"].parse(parsableUrl).hostname;
   var splitUrl = parsedUrl.split('.');
   if (splitUrl.length > 2) // eslint-disable-next-line
     return capitalize("".concat(splitUrl[1], ".").concat(splitUrl[2]));
@@ -3079,7 +3417,7 @@ var scrollToTop = function scrollToTop(scrollDuration) {
 var validateHexString = function validateHexString(str) {
   if (str === '') return true;
   str = str.substring(0, 2) === '0x' ? str.substring(2).toUpperCase() : str.toUpperCase();
-  return utils__default['default'].isHex(str);
+  return utils__default["default"].isHex(str);
 };
 
 var solidityType = function solidityType(inputType) {
@@ -3191,7 +3529,7 @@ var misc = {
   toBuffer: toBuffer
 };
 
-var debug$a = debugLogger__default['default']('MEWconnect:wallet'); // const debugConnectionState = debugLogger('MEWconnect:connection-state');
+var debug$a = debugLogger__default["default"]('MEWconnect:wallet'); // const debugConnectionState = debugLogger('MEWconnect:connection-state');
 
 var V1_SIGNAL_URL = 'https://connect.mewapi.io';
 var V2_SIGNAL_URL = 'wss://connect2.mewapi.io/staging';
@@ -3256,7 +3594,7 @@ var MEWconnectWallet = /*#__PURE__*/function () {
   _createClass(MEWconnectWallet, [{
     key: "init",
     value: function () {
-      var _init = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+      var _init = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
         var _this2 = this;
 
         var qrcodeListener,
@@ -3265,7 +3603,7 @@ var MEWconnectWallet = /*#__PURE__*/function () {
             mewConnect,
             address,
             _args3 = arguments;
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
@@ -3273,9 +3611,9 @@ var MEWconnectWallet = /*#__PURE__*/function () {
                 this.mewConnect.on('codeDisplay', qrcodeListener);
 
                 txSigner = /*#__PURE__*/function () {
-                  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(tx) {
+                  var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(tx) {
                     var tokenInfo, networkId;
-                    return regeneratorRuntime.wrap(function _callee$(_context) {
+                    return _regeneratorRuntime().wrap(function _callee$(_context) {
                       while (1) {
                         switch (_context.prev = _context.next) {
                           case 0:
@@ -3337,8 +3675,8 @@ var MEWconnectWallet = /*#__PURE__*/function () {
                 }();
 
                 msgSigner = /*#__PURE__*/function () {
-                  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(msg) {
-                    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(msg) {
+                    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
                       while (1) {
                         switch (_context2.prev = _context2.next) {
                           case 0:
@@ -3430,10 +3768,10 @@ var MEWconnectWallet = /*#__PURE__*/function () {
 }();
 
 var createWallet = /*#__PURE__*/function () {
-  var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(state, popupCreator, popUpHandler) {
+  var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(state, popupCreator, popUpHandler) {
     var _MEWconnectWallet, _tWallet;
 
-    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
@@ -3755,9 +4093,9 @@ var PopUpHandler = /*#__PURE__*/function () {
   return PopUpHandler;
 }();
 
-var debug$9 = debugLogger__default['default']('MEWconnect:webRTC-communication');
-var debugPeer = debugLogger__default['default']('MEWconnectVerbose:peer-instances');
-var debugStages$1 = debugLogger__default['default']('MEWconnect:peer-stages');
+var debug$9 = debugLogger__default["default"]('MEWconnect:webRTC-communication');
+var debugPeer = debugLogger__default["default"]('MEWconnectVerbose:peer-instances');
+var debugStages$1 = debugLogger__default["default"]('MEWconnect:peer-stages');
 
 var WebRtcCommunication = /*#__PURE__*/function (_MewConnectCommon) {
   _inherits(WebRtcCommunication, _MewConnectCommon);
@@ -3770,7 +4108,7 @@ var WebRtcCommunication = /*#__PURE__*/function (_MewConnectCommon) {
     _classCallCheck(this, WebRtcCommunication);
 
     _this = _super.call(this);
-    _this.Peer = SimplePeer__default['default'];
+    _this.Peer = SimplePeer__default["default"];
     _this.mewCrypto = mewCrypto;
     _this.peersCreated = {};
     _this.allPeerIds = [];
@@ -3874,7 +4212,7 @@ var WebRtcCommunication = /*#__PURE__*/function (_MewConnectCommon) {
   }, {
     key: "setActivePeerId",
     value: function setActivePeerId() {
-      this.activePeerId = uuid__default['default']();
+      this.activePeerId = uuid__default["default"]();
       this.allPeerIds.push(this.activePeerId);
     }
   }, {
@@ -4109,9 +4447,9 @@ var WebRtcCommunication = /*#__PURE__*/function (_MewConnectCommon) {
   }, {
     key: "onData",
     value: function () {
-      var _onData = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(peerID, data) {
+      var _onData = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(peerID, data) {
         var decryptedData, parsed;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
+        return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
@@ -4249,7 +4587,7 @@ var WebRtcCommunication = /*#__PURE__*/function (_MewConnectCommon) {
           if (this.isAlive() && this.p.createNewDataChannel) {
             try {
               debug$9('re-create dataChannel');
-              this.p.createNewDataChannel(uuid__default['default']());
+              this.p.createNewDataChannel(uuid__default["default"]());
 
               if (!this.channelTest && !this.outstandingMobileMessage) {
                 this.channelTest = true; // this.sendRtcMessage('address', '', '123')
@@ -4363,9 +4701,9 @@ var WebRtcCommunication = /*#__PURE__*/function (_MewConnectCommon) {
   }, {
     key: "rtcSend",
     value: function () {
-      var _rtcSend = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(arg) {
+      var _rtcSend = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(arg) {
         var encryptedSend;
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
@@ -4483,9 +4821,11 @@ var gitHooks = {
 	"pre-commit": "npm run lint"
 };
 var dependencies = {
+	"@koush/wrtc": "^0.5.3",
 	"@rollup/plugin-babel": "^5.3.0",
 	"@rollup/plugin-commonjs": "^20.0.0",
 	"@rollup/plugin-json": "^4.1.0",
+	axios: "^0.21.4",
 	"bignumber.js": "^9.0.0",
 	"browser-or-node": "^1.2.1",
 	"core-js": "^3.4.4",
@@ -4506,6 +4846,7 @@ var dependencies = {
 	"promise-ws": "^1.0.0-1",
 	qrcode: "^1.5.0",
 	"query-string": "^6.10.1",
+	sass: "^1.55.0",
 	secp256k1: "^3.8.0",
 	"simple-peer": "^9.6.2",
 	"socket.io-client": "^2.3.0",
@@ -4519,7 +4860,6 @@ var dependencies = {
 	"web3-core-requestmanager": "1.5.0",
 	"web3-utils": "1.5.0",
 	"webrtc-adapter": "^6.4.3",
-	wrtc: "^0.4.6",
 	ws: "^7.5.3"
 };
 var devDependencies = {
@@ -4535,7 +4875,6 @@ var devDependencies = {
 	"@vue/cli-plugin-eslint": "^4.2.3",
 	"@vue/cli-service": "^4.1.0",
 	"@vue/eslint-config-prettier": "^4.0.1",
-	axios: "^0.21.4",
 	"babel-core": "^7.0.0-bridge.0",
 	"babel-eslint": "^10.0.3",
 	"babel-jest": "^25.1.0",
@@ -4549,7 +4888,6 @@ var devDependencies = {
 	"eslint-plugin-security": "^1.4.0",
 	"eslint-plugin-vue": "^6.2.1",
 	jest: "^25.2.3",
-	"node-sass": "^4.12.0",
 	nyc: "^15.0.0",
 	opn: "^5.5.0",
 	"opn-cli": "^3.1.0",
@@ -4580,9 +4918,9 @@ var packageJson = {
 	resolutions: resolutions
 };
 
-var debug$8 = debugLogger__default['default']('MEWconnect:initiator-base');
-var debugStages = debugLogger__default['default']('MEWconnect:initiator-stages');
-var debugConnectionState$1 = debugLogger__default['default']('MEWconnect:connection-state');
+var debug$8 = debugLogger__default["default"]('MEWconnect:initiator-base');
+var debugStages = debugLogger__default["default"]('MEWconnect:initiator-stages');
+var debugConnectionState$1 = debugLogger__default["default"]('MEWconnect:connection-state');
 var qrString;
 
 var MewConnectInitiator = /*#__PURE__*/function (_MewConnectCommon) {
@@ -4656,8 +4994,8 @@ var MewConnectInitiator = /*#__PURE__*/function (_MewConnectCommon) {
   _createClass(MewConnectInitiator, [{
     key: "createWalletOnly",
     value: function () {
-      var _createWalletOnly = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(network) {
-        return regeneratorRuntime.wrap(function _callee$(_context) {
+      var _createWalletOnly = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(network) {
+        return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
@@ -4732,8 +5070,8 @@ var MewConnectInitiator = /*#__PURE__*/function (_MewConnectCommon) {
     }
   }, {
     key: "getSocketConnectionState",
-    // Returns a boolean indicating whether the socket connection exists and is active
-    value: function getSocketConnectionState() {
+    value: // Returns a boolean indicating whether the socket connection exists and is active
+    function getSocketConnectionState() {
       return this.socketV1Connected || this.socketV2Connected;
     } // Returns a boolean indicating whether the WebRTC connection exists and is active
 
@@ -4861,11 +5199,11 @@ var MewConnectInitiator = /*#__PURE__*/function (_MewConnectCommon) {
   }, {
     key: "refreshCode",
     value: function () {
-      var _refreshCode = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+      var _refreshCode = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
         var _this4 = this;
 
         var v2Events, webRtcCommEvents;
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
@@ -4903,11 +5241,11 @@ var MewConnectInitiator = /*#__PURE__*/function (_MewConnectCommon) {
   }, {
     key: "initiatorStart",
     value: function () {
-      var _initiatorStart = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(url, testPrivate) {
+      var _initiatorStart = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(url, testPrivate) {
         var _this5 = this;
 
         var options, regenerateQRcodeOnClick, showRefresh, connectionErrorTimeOut;
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
@@ -5091,8 +5429,8 @@ var MewConnectInitiator = /*#__PURE__*/function (_MewConnectCommon) {
   }, {
     key: "rtcSend",
     value: function () {
-      var _rtcSend = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(arg) {
-        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+      var _rtcSend = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(arg) {
+        return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
@@ -5116,7 +5454,7 @@ var MewConnectInitiator = /*#__PURE__*/function (_MewConnectCommon) {
   }, {
     key: "sendRtcMessage",
     value: function sendRtcMessage(type, data) {
-      var id = uuid__default['default']();
+      var id = uuid__default["default"]();
       this.requestIds.push(id);
       debug$8('MESSAGE IDS KNOWN', this.requestIds);
       this.webRtcCommunication.sendRtcMessage(type, data, id);
@@ -5799,8 +6137,8 @@ var getTimer = function getTimer() {
     return createTimerObject();
   } else if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope // eslint-disable-line
   ) {
-      return createTimerObject();
-    } else if (worker === undefined) {
+    return createTimerObject();
+  } else if (worker === undefined) {
     var url = URL.createObjectURL(new Blob([workerCode()], {
       type: 'text/javascript'
     }));
@@ -5864,8 +6202,8 @@ var getSanitizedTx = function getSanitizedTx(tx) {
   });
 };
 
-var debug$7 = debugLogger__default['default']('MEWconnectWeb3');
-var debugErrors$6 = debugLogger__default['default']('MEWconnectError');
+var debug$7 = debugLogger__default["default"]('MEWconnectWeb3');
+var debugErrors$6 = debugLogger__default["default"]('MEWconnectError');
 
 var setEvents = function setEvents(promiObj, tx, eventHub) {
   promiObj.once('transactionHash', function (hash) {
@@ -5878,9 +6216,9 @@ var setEvents = function setEvents(promiObj, tx, eventHub) {
 };
 
 var ethSendTransaction = /*#__PURE__*/(function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref, res, next) {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref, res, next) {
     var payload, store, eventHub, tx, localTx;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
@@ -6055,11 +6393,11 @@ var ethSendTransaction = /*#__PURE__*/(function () {
   };
 })();
 
-var debug$6 = debugLogger__default['default']('MEWconnectWeb3');
+var debug$6 = debugLogger__default["default"]('MEWconnectWeb3');
 var ethSign = /*#__PURE__*/(function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref, res, next) {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref, res, next) {
     var payload, eventHub, msg;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
@@ -6100,9 +6438,9 @@ var ethSign = /*#__PURE__*/(function () {
 })();
 
 var ethAccounts = /*#__PURE__*/(function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref, res, next) {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref, res, next) {
     var payload, store;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
@@ -6142,9 +6480,9 @@ var ethAccounts = /*#__PURE__*/(function () {
 })();
 
 var ethCoinbase = /*#__PURE__*/(function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref, res, next) {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref, res, next) {
     var payload, store;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
@@ -6177,12 +6515,12 @@ var ethCoinbase = /*#__PURE__*/(function () {
   };
 })();
 
-var debug$5 = debugLogger__default['default']('MEWconnectWeb3');
-var debugErrors$5 = debugLogger__default['default']('MEWconnectError');
+var debug$5 = debugLogger__default["default"]('MEWconnectWeb3');
+var debugErrors$5 = debugLogger__default["default"]('MEWconnectError');
 var ethSignTransaction = /*#__PURE__*/(function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref, res, next) {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref, res, next) {
     var payload, store, eventHub, tx, localTx;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
@@ -6238,7 +6576,7 @@ var ethSignTransaction = /*#__PURE__*/(function () {
               tx.gasLimit = tx.gas;
             }
 
-            if (!(!tx.gas || new BigNumber__default['default'](tx.gas).lte(0))) {
+            if (!(!tx.gas || new BigNumber__default["default"](tx.gas).lte(0))) {
               _context.next = 28;
               break;
             }
@@ -6258,7 +6596,7 @@ var ethSignTransaction = /*#__PURE__*/(function () {
             tx.gas = _context.t1;
             tx.chainId = !tx.chainId ? store.state.network.chainID : tx.chainId;
 
-            if (!(!tx.gasPrice || new BigNumber__default['default'](tx.gasPrice).lte(0))) {
+            if (!(!tx.gasPrice || new BigNumber__default["default"](tx.gasPrice).lte(0))) {
               _context.next = 37;
               break;
             }
@@ -6316,9 +6654,9 @@ var ethSignTransaction = /*#__PURE__*/(function () {
 })();
 
 var netVersion = /*#__PURE__*/(function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref, res, next) {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref, res, next) {
     var payload, store;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
@@ -6347,11 +6685,11 @@ var netVersion = /*#__PURE__*/(function () {
   };
 })();
 
-var debug$4 = debugLogger__default['default']('MEWconnectWeb3');
+var debug$4 = debugLogger__default["default"]('MEWconnectWeb3');
 var personalSign = /*#__PURE__*/(function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref, res, next) {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref, res, next) {
     var payload, eventHub, msg;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
@@ -6391,9 +6729,9 @@ var personalSign = /*#__PURE__*/(function () {
 })();
 
 var ecRecover = /*#__PURE__*/(function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref, res, next) {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref, res, next) {
     var payload, parts, recovered, addressBuffer;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
@@ -6411,14 +6749,14 @@ var ecRecover = /*#__PURE__*/(function () {
               res(toError(payload.id, "personal_ecRecover expects 2 parameters.  Received ".concat(payload.params.length, " ")));
             }
 
-            parts = ethUtils__default['default'].fromRpcSig(payload.params[1]);
+            parts = ethUtils__default["default"].fromRpcSig(payload.params[1]);
 
             if (!parts) {
               res(toError(payload.id, 'Invalid signature supplied to personal_ecRecover'));
             }
 
-            recovered = ethUtils__default['default'].ecrecover(ethUtils__default['default'].hashPersonalMessage(misc.toBuffer(payload.params[0])), parts.v, parts.r, parts.s);
-            addressBuffer = ethUtils__default['default'].pubToAddress(recovered);
+            recovered = ethUtils__default["default"].ecrecover(ethUtils__default["default"].hashPersonalMessage(misc.toBuffer(payload.params[0])), parts.v, parts.r, parts.s);
+            addressBuffer = ethUtils__default["default"].pubToAddress(recovered);
             res(null, toPayload(payload.id, '0x' + addressBuffer.toString('hex')));
 
           case 9:
@@ -6434,12 +6772,12 @@ var ecRecover = /*#__PURE__*/(function () {
   };
 })();
 
-var debug$3 = debugLogger__default['default']('MEWconnectWeb3');
-var debugErrors$4 = debugLogger__default['default']('MEWconnectError');
+var debug$3 = debugLogger__default["default"]('MEWconnectWeb3');
+var debugErrors$4 = debugLogger__default["default"]('MEWconnectError');
 var getEncryptionPublicKey = /*#__PURE__*/(function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref, res, next) {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref, res, next) {
     var payload, eventHub;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
@@ -6483,12 +6821,12 @@ var getEncryptionPublicKey = /*#__PURE__*/(function () {
   };
 })();
 
-var debug$2 = debugLogger__default['default']('MEWconnectWeb3');
-var debugErrors$3 = debugLogger__default['default']('MEWconnectError');
+var debug$2 = debugLogger__default["default"]('MEWconnectWeb3');
+var debugErrors$3 = debugLogger__default["default"]('MEWconnectError');
 var decrypt = /*#__PURE__*/(function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref, res, next) {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref, res, next) {
     var payload, eventHub, jsonObj;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
@@ -6541,12 +6879,12 @@ var decrypt = /*#__PURE__*/(function () {
   };
 })();
 
-var debug$1 = debugLogger__default['default']('MEWconnectWeb3');
-var debugErrors$2 = debugLogger__default['default']('MEWconnectError');
+var debug$1 = debugLogger__default["default"]('MEWconnectWeb3');
+var debugErrors$2 = debugLogger__default["default"]('MEWconnectError');
 var signTypedData_v3 = /*#__PURE__*/(function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref, res, next) {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref, res, next) {
     var payload, eventHub;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
@@ -6590,12 +6928,12 @@ var signTypedData_v3 = /*#__PURE__*/(function () {
   };
 })();
 
-var debug = debugLogger__default['default']('MEWconnectWeb3');
-var debugErrors$1 = debugLogger__default['default']('MEWconnectError');
+var debug = debugLogger__default["default"]('MEWconnectWeb3');
+var debugErrors$1 = debugLogger__default["default"]('MEWconnectError');
 var signTypedData_v4 = /*#__PURE__*/(function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref, res, next) {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref, res, next) {
     var payload, eventHub;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
@@ -6640,9 +6978,9 @@ var signTypedData_v4 = /*#__PURE__*/(function () {
 })();
 
 var ethRequestAccounts = /*#__PURE__*/(function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref, res, next) {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(_ref, res, next) {
     var payload, store;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
@@ -6681,7 +7019,7 @@ var ethRequestAccounts = /*#__PURE__*/(function () {
   };
 })();
 
-var WSProvider = function WSProvider(host, options, store, eventHub) {
+var WSProvider = /*#__PURE__*/_createClass(function WSProvider(host, options, store, eventHub) {
   var _this2 = this;
 
   _classCallCheck(this, WSProvider);
@@ -6690,14 +7028,12 @@ var WSProvider = function WSProvider(host, options, store, eventHub) {
   this.lastMessage = new Date().getTime();
 
   var keepAlive = function keepAlive() {
-    if (_this2.wsProvider.connection.readyState === _this2.wsProvider.connection.OPEN) _this2.wsProvider.connection.send('');
-
     if (!Object.is(_this2.wsProvider, store.state.web3.currentProvider) && _this2.lastMessage + 10 * 60 * 1000 < new Date().getTime() //wait extra 10 minutes
     ) {
-        _this2.wsProvider.disconnect();
+      _this2.wsProvider.disconnect();
 
-        workerTimer.clearInterval(_this2.keepAliveTimer);
-      }
+      workerTimer.clearInterval(_this2.keepAliveTimer);
+    }
   };
 
   this.keepAliveTimer = workerTimer.setInterval(keepAlive, 5000);
@@ -6764,7 +7100,7 @@ var WSProvider = function WSProvider(host, options, store, eventHub) {
   };
 
   return this.wsProvider;
-};
+});
 
 var HttpRequestManager = /*#__PURE__*/function () {
   function HttpRequestManager(host, options) {
@@ -6785,7 +7121,7 @@ var HttpRequestManager = /*#__PURE__*/function () {
       });
     }
 
-    this.request = axios__default['default'].create(config);
+    this.request = axios__default["default"].create(config);
     return new web3CoreRequestmanager.Manager(this);
   }
 
@@ -6806,7 +7142,7 @@ var HttpRequestManager = /*#__PURE__*/function () {
   return HttpRequestManager;
 }();
 
-var HttpProvider = function HttpProvider(host, options, store, eventHub) {
+var HttpProvider = /*#__PURE__*/_createClass(function HttpProvider(host, options, store, eventHub) {
   var _this = this;
 
   _classCallCheck(this, HttpProvider);
@@ -6920,9 +7256,9 @@ var HttpProvider = function HttpProvider(host, options, store, eventHub) {
   };
 
   return this.httpProvider;
-};
+});
 
-var MEWProvider = function MEWProvider(host, options, store, eventHub) {
+var MEWProvider = /*#__PURE__*/_createClass(function MEWProvider(host, options, store, eventHub) {
   _classCallCheck(this, MEWProvider);
 
   if (host && typeof host === 'string') {
@@ -6935,7 +7271,7 @@ var MEWProvider = function MEWProvider(host, options, store, eventHub) {
       throw new Error('Can\'t autodetect provider for "' + host + '"');
     }
   }
-};
+});
 
 var tokens$5 = [
 	{
@@ -60865,12 +61201,12 @@ function nativeCheck() {
   });
 }
 
-var debugConnectionState = debugLogger__default['default']('MEWconnect:connection-state');
-var debugErrors = debugLogger__default['default']('MEWconnectError');
+var debugConnectionState = debugLogger__default["default"]('MEWconnect:connection-state');
+var debugErrors = debugLogger__default["default"]('MEWconnectError');
 var state = {
   wallet: null
 };
-var eventHub = new EventEmitter__default['default']();
+var eventHub = new EventEmitter__default["default"]();
 var popUpCreator = {};
 
 var Integration = /*#__PURE__*/function (_EventEmitter) {
@@ -60985,6 +61321,15 @@ var Integration = /*#__PURE__*/function (_EventEmitter) {
       this.popUpHandler.showConnectedNotice();
     }
   }, {
+    key: "getWalletOnly",
+    get: function get() {
+      if (state.wallet) {
+        return state.wallet;
+      }
+
+      return null;
+    }
+  }, {
     key: "enable",
     value: function enable() {
       var _this3 = this;
@@ -61030,8 +61375,8 @@ var Integration = /*#__PURE__*/function (_EventEmitter) {
 
       // eslint-disable-next-line
       return new Promise( /*#__PURE__*/function () {
-        var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(resolve, reject) {
-          return regeneratorRuntime.wrap(function _callee$(_context) {
+        var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(resolve, reject) {
+          return _regeneratorRuntime().wrap(function _callee$(_context) {
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
@@ -61152,7 +61497,7 @@ var Integration = /*#__PURE__*/function (_EventEmitter) {
             throw new Error('Unknown network, please add your network to the constructor');
           }
 
-          var hostUrl = url__default['default'].parse(RPC_URL);
+          var hostUrl = url__default["default"].parse(RPC_URL);
           var options = {
             subscriptionNotFoundNoThrow: this.subscriptionNotFoundNoThrow
           };
@@ -61173,7 +61518,7 @@ var Integration = /*#__PURE__*/function (_EventEmitter) {
 
         web3Provider.disconnect = this.disconnect.bind(this);
         state.web3Provider = web3Provider;
-        state.web3 = new web3__default['default'](web3Provider);
+        state.web3 = new web3__default["default"](web3Provider);
 
         if (!this.runningInApp) {
           state.web3.currentProvider.sendAsync = state.web3.currentProvider.send;
@@ -61523,15 +61868,6 @@ var Integration = /*#__PURE__*/function (_EventEmitter) {
         }
       });
     }
-  }, {
-    key: "getWalletOnly",
-    get: function get() {
-      if (state.wallet) {
-        return state.wallet;
-      }
-
-      return null;
-    }
   }], [{
     key: "getConnectionState",
     get: function get() {
@@ -61545,7 +61881,7 @@ var Integration = /*#__PURE__*/function (_EventEmitter) {
   }]);
 
   return Integration;
-}(EventEmitter__default['default']);
+}(EventEmitter__default["default"]);
 
 // INITIATOR CLIENT
 
